@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="系统构建脚本" default="build" basedir=".">
+
+	<property name="src.dir" value="${basedir}/src" />
+	
+	<property name="xdoclet.home" value="D:/java/xdoclet-plugins-1.0.3" />
+
+	<!-- Build classpath -->
+	<path id="xdoclet.task.classpath">
+		<fileset dir="${xdoclet.home}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${xdoclet.home}/plugins">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<path id="classpath">
+		<fileset dir="${basedir}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="build">
+		<delete dir="${basedir}/bin/org" />
+		<mkdir dir="${basedir}/bin/org" />
+		<javac srcdir="." destdir="${basedir}/bin" debug="true" debuglevel="lines,vars,source">
+			<!--<compilerarg value="-encoding gb2312 "/>-->
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+	
+	<taskdef name="xdoclet" classname="org.xdoclet.ant.XDocletTask" classpathref="xdoclet.task.classpath" />
+
+	<target name="生成Hibernate配置文件">
+		<xdoclet>
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>
+			<component classname="org.xdoclet.plugin.hibernate.HibernateConfigPlugin" destdir="${src.dir}" version="3.0" hbm2ddlauto="update" jdbcurl="jdbc:mysql://127.0.0.1/test" jdbcdriver="com.mysql.jdbc.Driver" jdbcusername="root" jdbcpassword="root" dialect="org.hibernate.dialect.MySQLDialect" showsql="true" />
+		</xdoclet>
+	</target>
+	<target name="生成hibernate映射文件">
+		<xdoclet>
+			<fileset dir="${basedir}/src/org/darkness/oa/model">
+				<include name="**/*.java" />
+			</fileset>
+			<component classname="org.xdoclet.plugin.hibernate.HibernateMappingPlugin" version="3.0" destdir="${src.dir}" />
+		</xdoclet>
+	</target>
+</project>
